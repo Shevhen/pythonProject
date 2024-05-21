@@ -42,14 +42,18 @@ class FileUploadAPIView(APIView):
     def get(self, *args, **kwargs):
         f = self.request.GET.get('f')
         ip = self.request.META.get('REMOTE_ADDR')
+        print(ip)
         file = UploadedFile.objects.get(ip=ip)
+        print(file)
         new_name = file.file.__str__().split('.')[0] + '.pdf'
         # with open(file.file.__str__(), 'r') as fileg: text = fileg.read()
         # with open(new_name, 'w') as fileg: fileg.write(text)
 
         document = Document()
         document.LoadFromFile(file.file.__str__())
+        print(file.file.__str__())
         document.SaveToFile(new_name)
+        print(new_name)
 
         # FormatChanger(file, new_name, f)
         return Response('file here!')
