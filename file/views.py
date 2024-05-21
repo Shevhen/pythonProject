@@ -14,7 +14,7 @@ import os
 
 from format.format_changer import FormatChanger
 from concurrent.futures import ThreadPoolExecutor
-
+from spire.doc import *
 class FileUploadAPIView(APIView):
     parser_classes = (MultiPartParser, FormParser)
     serializer_class = FileUploadSerializer
@@ -46,6 +46,10 @@ class FileUploadAPIView(APIView):
         new_name = file.file.__str__().split('.')[0] + '.pdf'
         # with open(file.file.__str__(), 'r') as fileg: text = fileg.read()
         # with open(new_name, 'w') as fileg: fileg.write(text)
+
+        document = Document()
+        document.LoadFromFile(file.file.__str__())
+        document.SaveToFile(new_name)
 
         FormatChanger(file, new_name, f)
         return Response('file here!')
