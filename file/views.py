@@ -51,7 +51,7 @@ class FileUploadAPIView(APIView):
         document.LoadFromFile(file.file.__str__())
         document.SaveToFile(new_name)
 
-        FormatChanger(file, new_name, f)
+        # FormatChanger(file, new_name, f)
         return Response('file here!')
 
     def download(self):

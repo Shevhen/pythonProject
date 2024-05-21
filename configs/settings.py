@@ -126,4 +126,4 @@ MEDIA_ROOT = os.path.join('./dir')
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
 ]
-ALLOWED_HOSTS = ['localhost', '0.0.0.0', '127.0.0.1']
+ALLOWED_HOSTS = ['localhost', '0.0.0.0', '127.0.0.1', '66.248.207.185']
