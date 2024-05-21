@@ -22,9 +22,10 @@ class FileUploadAPIView(APIView):
     def post(self, *args, **kwargs):
         data = {
             'file': self.request.data.get('file'),
-            'ip': self.request.META.get('REMOTE_ADDR')
+            'ip': self.request.META.get('REMOTE_ADDR'),
+            'path': './dir',
         }
-        serializer = self.serializer_class(data=data)
+        serializer = FileUploadSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
             # print()
@@ -44,13 +45,14 @@ class FileUploadAPIView(APIView):
         ip = self.request.META.get('REMOTE_ADDR')
         print(ip)
         file = UploadedFile.objects.get(ip=ip)
-        print(file)
-        new_name = file.file.__str__().split('.')[0] + '.pdf'
+        print(file.file)
+        new_name = file.path + '/' + file.file.__str__().split('.')[0] + '.pdf'
         # with open(file.file.__str__(), 'r') as fileg: text = fileg.read()
         # with open(new_name, 'w') as fileg: fileg.write(text)
 
         document = Document()
-        document.LoadFromFile(file.file.__str__())
+        document.LoadFromFile(file.path + '/' + file.file.__str__())
+        print(file.path + '/' + file.file.__str__())
         print(file.file.__str__())
         document.SaveToFile(new_name)
         print(new_name)

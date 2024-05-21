@@ -7,6 +7,7 @@ class UploadedFile(models.Model):
     ip = models.CharField(max_length=256)
     file = models.FileField()
     uploaded_on = models.DateTimeField(auto_now_add=True)
+    path = models.CharField(max_length=256)
 
     #
     # class Meta:
