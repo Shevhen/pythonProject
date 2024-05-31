@@ -3,6 +3,7 @@ from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from file.file_changer import FileChanger
 from file.models import UploadedFile
 from file.serializers import FileUploadSerializer
 
@@ -12,14 +13,16 @@ from django.http import HttpResponse
 from configs.settings import BASE_DIR, MEDIA_ROOT
 import os
 
-from format.format_changer import FormatChanger
 from concurrent.futures import ThreadPoolExecutor
 from spire.doc import *
+import pypandoc
+
+
 class FileUploadAPIView(APIView):
     parser_classes = (MultiPartParser, FormParser)
     serializer_class = FileUploadSerializer
-
     def post(self, *args, **kwargs):
+
         data = {
             'file': self.request.data.get('file'),
             'ip': self.request.META.get('REMOTE_ADDR'),
@@ -28,8 +31,6 @@ class FileUploadAPIView(APIView):
         serializer = FileUploadSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
-            # print()
-            # os.mkdir(os.path.join('../dir', serializer.data.get('ip')))
 
             return Response(
                 serializer.data,
@@ -41,31 +42,31 @@ class FileUploadAPIView(APIView):
         )
 
     def get(self, *args, **kwargs):
-        f = self.request.GET.get('f')
+        form = self.request.query_params.get('f')
         ip = self.request.META.get('REMOTE_ADDR')
-        print(ip)
+        FileChanger(form, ip)
+
+        return Response('done!')
+
+    def delete(self, *args, **kwargs):
+        ip = self.request.META.get('REMOTE_ADDR')
         file = UploadedFile.objects.get(ip=ip)
-        print(file.file)
-        new_name = file.path + '/' + file.file.__str__().split('.')[0] + '.pdf'
-        # with open(file.file.__str__(), 'r') as fileg: text = fileg.read()
-        # with open(new_name, 'w') as fileg: fileg.write(text)
+        os.remove(file.new_file.__str__())
+        os.remove(file.path + '/' + file.file.__str__())
+        file.delete()
+        return Response('done!')
 
-        document = Document()
-        document.LoadFromFile(file.path + '/' + file.file.__str__())
-        print(file.path + '/' + file.file.__str__())
-        print(file.file.__str__())
-        document.SaveToFile(new_name)
-        print(new_name)
 
-        # FormatChanger(file, new_name, f)
-        return Response('file here!')
-
-    def download(self):
-        path_to_file = MEDIA_ROOT + '/NOTICE.pdf'
+class FileDownloader(APIView):
+    parser_classes = (MultiPartParser, FormParser)
+    serializer_class = FileUploadSerializer
+    def get(self, *args, **kwargs):
+        ip = self.request.META.get('REMOTE_ADDR')
+        file = UploadedFile.objects.get(ip=ip)
+        path_to_file = file.new_file.__str__()
         f = open(path_to_file, 'rb')
         pdfFile = File(f).read()
         # print(pdfFile)
         response = HttpResponse(pdfFile)
         response['Content-Disposition'] = 'attachment'
         return response
-

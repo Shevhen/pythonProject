@@ -8,7 +8,7 @@ class UploadedFile(models.Model):
     file = models.FileField()
     uploaded_on = models.DateTimeField(auto_now_add=True)
     path = models.CharField(max_length=256)
-
+    new_file = models.FileField()
     #
     # class Meta:
     #     db_table = 'file_uploadedfile'

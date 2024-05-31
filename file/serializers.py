@@ -5,7 +5,7 @@ class FileUploadSerializer(serializers.ModelSerializer):
     class Meta:
 
         model = UploadedFile
-        fields = ('file', 'uploaded_on', 'ip', 'path')
+        fields = ('file', 'uploaded_on', 'ip', 'path',)
 
     # def find(self, model):
     #     UploadedFile.
